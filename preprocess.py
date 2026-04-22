@@ -1,42 +1,34 @@
 import re
 import nltk
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
 
-# download once
-nltk.download('punkt_tab')
-nltk.download('stopwords')
-nltk.download('wordnet')
+# Ensure required tokenizers are downloaded
+nltk.download('punkt', quiet=True)
+try:
+    nltk.download('punkt_tab', quiet=True)
+except:
+    pass
 
-stop_words = set(stopwords.words('english'))
-lemmatizer = WordNetLemmatizer()
+def chunk_text(text):
+    # Replace newlines and excessive spaces with a single space
+    text = re.sub(r'\s+', ' ', text).strip()
+    
+    # Chunk the text into individual sentences
+    sentences = nltk.tokenize.sent_tokenize(text)
+    return sentences
 
-def preprocess_text(text):
-    # 1. Remove unwanted characters
-    text = re.sub(r'[^a-zA-Z\s]', '', text)
+# Use the existing pdf_text.txt file instead of an interactive prompt for smoother pipeline runs
+file_path = "pdf_text.txt"
 
-    # 2. Convert to lowercase
-    text = text.lower()
-
-    # 3. Tokenization
-    tokens = word_tokenize(text)
-
-    # 4. Remove stopwords
-    tokens = [word for word in tokens if word not in stop_words]
-
-    # 5. Lemmatization (optional but recommended)
-    tokens = [lemmatizer.lemmatize(word) for word in tokens]
-
-    return tokens
-
-
-file_path = input("Enter PDF file path: ")
-
-with open(file_path, "r") as infile:
+with open(file_path, "r", encoding="utf-8") as infile:
     data = infile.read()
 
-result = preprocess_text(data)
+# Chunk into sentences
+sentences = chunk_text(data)
 
-with open("preprocess.txt", "w") as outfile:
-    outfile.write(" ".join(result))
+# Filter out empty or extremely short sentences
+sentences = [s.strip() for s in sentences if len(s.split()) > 3]
+
+# Write each sentence on a new line so that the next stage registers them as multiple chunks
+with open("preprocess.txt", "w", encoding="utf-8") as outfile:
+    for s in sentences:
+        outfile.write(s + "\n")

@@ -1,3 +1,13 @@
+# Python env
 NCERT/
-PDF/
-pdf_text.txt
+
+#PDF file
+data/
+
+#extracted data
+*.txt
+*.npy
+*.index
+
+#MacOS
+.DS_Store
