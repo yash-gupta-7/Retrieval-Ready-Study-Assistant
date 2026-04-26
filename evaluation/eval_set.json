@@ -1,0 +1,21 @@
+[
+  {"id":  1, "question": "What is uniform motion?",                                       "type": "textbook"},
+  {"id":  2, "question": "Define velocity and state its SI unit.",                        "type": "textbook"},
+  {"id":  3, "question": "What does the slope of a distance-time graph represent?",       "type": "textbook"},
+  {"id":  4, "question": "State Newton's first law of motion.",                           "type": "textbook"},
+  {"id":  5, "question": "What is inertia and how does mass relate to it?",               "type": "textbook"},
+  {"id":  6, "question": "State Newton's second law of motion.",                          "type": "textbook"},
+  {"id":  7, "question": "Define momentum and give its SI unit.",                         "type": "textbook"},
+  {"id":  8, "question": "State Newton's third law of motion and give an example.",       "type": "textbook"},
+  {"id":  9, "question": "What is the universal law of gravitation?",                     "type": "textbook"},
+  {"id": 10, "question": "What is the value of acceleration due to gravity on Earth?",    "type": "textbook"},
+  {"id": 11, "question": "Differentiate between mass and weight.",                        "type": "textbook"},
+  {"id": 12, "question": "What happens to the weight of an object on the Moon?",          "type": "textbook"},
+  {"id": 13, "question": "Can you explain what it means for an object to move uniformly?","type": "paraphrase"},
+  {"id": 14, "question": "How does a body's resistance to change in motion relate to its mass?", "type": "paraphrase"},
+  {"id": 15, "question": "If no net force acts on an object, what happens to its motion?","type": "paraphrase"},
+  {"id": 16, "question": "Who is the current Prime Minister of India?",                   "type": "out_of_scope"},
+  {"id": 17, "question": "What is the capital city of France?",                           "type": "out_of_scope"},
+  {"id": 18, "question": "Explain how a nuclear reactor generates electricity.",           "type": "out_of_scope"},
+  {"id": 19, "question": "What is the speed of sound in water at 25 degrees Celsius?",   "type": "out_of_scope"}
+]
