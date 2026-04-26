@@ -1,5 +1,5 @@
 # Python env
-NCERT/
+.env/
 
 #PDF file
 data/
@@ -11,3 +11,7 @@ data/
 
 #MacOS
 .DS_Store
+
+# Python
+__pycache__/
+*.pyc
