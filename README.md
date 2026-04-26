@@ -1,50 +1,70 @@
-# 📚 NCERT RAG — Production-Grade Document Intelligence
+<div align="center">
 
-![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue)
-![LLM](https://img.shields.io/badge/LLM-Llama_3.1_8B-orange)
-![API](https://img.shields.io/badge/API-Groq-green)
-![Retrieval](https://img.shields.io/badge/Retrieval-BM25-red)
+# 📚 NCERT Retrieval-Ready Study Assistant
+**A Production-Grade Document Intelligence & RAG System for Class 9 Science**
 
-A production-grade, four-stage **Retrieval-Augmented Generation (RAG)** system built specifically for **NCERT Class 9 Science** (Motion, Force & Laws of Motion, Gravitation). This project seamlessly ingests PDF textbooks, chunks them systematically, retrieves relevant context using BM25 lexical search, and generates grounded answers utilizing the Groq API (Llama 3.1 8B).
+[![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![LLM Engine](https://img.shields.io/badge/LLM-Llama_3.1_8B-FF9E0F.svg?style=for-the-badge&logo=meta&logoColor=white)](https://groq.com)
+[![API Provider](https://img.shields.io/badge/Provider-Groq-00B27A.svg?style=for-the-badge&logo=groq&logoColor=white)](https://console.groq.com)
+[![Retrieval Method](https://img.shields.io/badge/Retrieval-BM25-E4405F.svg?style=for-the-badge&logo=apache&logoColor=white)](#)
+
+*An intelligent, hallucination-free educational assistant that answers student queries **strictly** using curriculum-approved NCERT textbooks.*
+
+</div>
+
+---
+
+## 🌟 Overview
+
+The **Retrieval-Ready Study Assistant** is a modular, four-stage **Retrieval-Augmented Generation (RAG)** pipeline. It is specifically calibrated for **NCERT Class 9 Science** chapters (Motion, Force & Laws of Motion, Gravitation). By coupling high-speed lexical retrieval (BM25) with high-accuracy generation (Llama 3.1), the system strictly grounds every answer in the textbook text and firmly refuses to answer out-of-syllabus questions.
+
+---
+
+## 📥 Required Resources: Download NCERT PDFs
+
+> [!IMPORTANT]
+> **You must provide the raw textbook files before running the pipeline!**
+> The system requires the official NCERT chapter PDFs to function. 
+
+You can download the **official, open-source PDF files for NCERT Class 9 Science** directly from the government portal:
+
+🔗 **[Click Here to Download NCERT Textbook PDFs](https://ncert.nic.in/textbook.php?iesc1=0-11)**
+
+**Instructions:**
+1. Navigate to the link above.
+2. Select Class: **Class IX** | Subject: **Science** | Book Title: **Science**.
+3. Download the relevant chapter PDFs (e.g., Chapter 7, 8, 9).
+4. Save the `.pdf` files directly into your `data/raw/` folder in this project.
 
 ---
 
 ## 🏗 System Architecture
 
-The pipeline is completely modular and orchestrated by a master script, utilizing BM25 for fast, accurate lexical retrieval, followed by LLM-powered generation ensuring textbook-grounded answers.
+The pipeline is completely modular, orchestrated by a master script (`pipeline.py`). It utilizes a deterministic approach to data parsing and retrieval, ensuring maximum factual reliability.
 
 ```mermaid
 graph TD
-    A[NCERT PDFs] -->|Stage 1: extraction.py| B(Raw Text: pdf_text.txt)
-    B -->|Stage 2: preprocess.py| C(Chunked Data: chunks.json & preprocess.txt)
+    %% Styling
+    classDef extract fill:#4a90e2,stroke:#2a5082,stroke-width:2px,color:#fff;
+    classDef process fill:#e67e22,stroke:#a04000,stroke-width:2px,color:#fff;
+    classDef retrieve fill:#e74c3c,stroke:#922b21,stroke-width:2px,color:#fff;
+    classDef generate fill:#2ecc71,stroke:#186a3b,stroke-width:2px,color:#fff;
+    classDef evaluate fill:#9b59b6,stroke:#512e5f,stroke-width:2px,color:#fff;
+
+    A[📄 Raw NCERT PDFs] -->|Stage 1: extraction.py| B(Text: pdf_text.txt):::extract
+    B -->|Stage 2: preprocess.py| C(Chunks: chunks.json):::process
     
-    C -->|Stage 3: retriever.py| D{BM25 Retriever}
+    C -->|Stage 3: retriever.py| D{🔍 BM25 Lexical Retriever}:::retrieve
     
-    E[User Query] --> D
-    D -->|Top-K Context Chunks| F[rag.py - Groq LLM]
+    E[👤 User Query] --> D
+    D -->|Top-K Context Chunks| F[🤖 rag.py - Groq LLM]:::generate
     E --> F
     
-    F -->|Generation based strictly on Context| G[Grounded Answer]
+    F -->|Generation based strictly on Context| G[✅ Grounded Answer]:::generate
     
-    H[eval_set.json] -->|Stage 4: run_eval.py| I[Evaluation Framework]
-    I -->|Metrics Output| J(Evaluation CSV & Markdown)
-
-    classDef stage fill:#f9f,stroke:#333,stroke-width:2px;
-    class B,C,D,F,I stage;
+    H[📊 eval_set.json] -->|Stage 4: run_eval.py| I[🧪 Evaluation Framework]:::evaluate
+    I -->|Metrics Output| J(CSV & Markdown Reports)
 ```
-
----
-
-## 🔗 Resources & Prerequisites
-
-Before running the application, ensure you have the following prerequisites in place:
-
-1. **Python 3.9+** is required.
-2. **Groq API Key**: Essential for querying the Llama 3 LLM. You can grab an API key by signing up at [Groq Console](https://console.groq.com/).
-3. **Dataset (PDFs)**: You must download the NCERT Science Class 9 textbook PDFs to feed into the data extraction pipeline. 
-   📥 **Link for downloading OS PDF files for NCERT:** [NCERT Textbook Portal](https://ncert.nic.in/textbook.php?iesc1=0-11)
-
-*Please save the downloaded PDF files inside the `data/raw/` directory after creating the directory structure as shown below.*
 
 ---
 
@@ -52,131 +72,108 @@ Before running the application, ensure you have the following prerequisites in p
 
 ```text
 NCERT RAG Project/
-├── config.py                   # Centralized paths, model & chunking settings 
-├── pipeline.py                 # Master orchestrator — runs all stages end-to-end
+├── config.py                   # ⚙️ Centralized paths, model & chunking settings 
+├── pipeline.py                 # 🚀 Master orchestrator — runs all stages end-to-end
 │
-├── extraction.py               # Stage 1 — PDF extraction utilizing PyMuPDF
-├── preprocess.py               # Stage 2 — Sentence-level Chunking (chunks.json)
-├── retriever.py                # Stage 3 — BM25 Lexical Retriever engine
-├── rag.py                      # LLM grounded generation (Groq API)
+├── extraction.py               # 📄 Stage 1 — PDF extraction utilizing PyMuPDF
+├── preprocess.py               # ✂️ Stage 2 — Sentence-level Chunking
+├── retriever.py                # 🔍 Stage 3 — BM25 Lexical Retriever engine
+├── rag.py                      # 🧠 LLM grounded generation (Groq API)
 │
 ├── evaluation/
-│   ├── eval_set.json           # 19-question evaluation dataset
-│   ├── run_eval.py             # Evaluation runner
-│   └── results/                # Auto-generated CSV & MD reports (ignored by git)
+│   ├── eval_set.json           # 📋 19-question evaluation dataset
+│   ├── run_eval.py             # 🧪 Evaluation runner
+│   └── results/                # 📈 Auto-generated CSV & MD reports
 │
 ├── data/
-│   ├── raw/                    # 📥 Place your downloaded NCERT PDF(s) here
-│   └── processed/              # Auto-generated intermediate parsing files
-│       ├── pdf_text.txt
-│       ├── chunks.json
-│       └── preprocess.txt
+│   ├── raw/                    # 📥 Place your downloaded NCERT PDF(s) here!
+│   └── processed/              # ⚙️ Auto-generated intermediate parsing files
 │
-├── requirements.txt            # Project Python dependencies
-└── README.md                   # Project Documentation
+└── requirements.txt            # 📦 Project Python dependencies
 ```
 
 ---
 
-## 🚀 Setup & Installation Steps
+## 🚀 Installation & Quick Start
 
-**1. Clone the repository and navigate to the root directory:**
+**1. Clone the repository:**
 ```bash
 git clone <your-repo-url>
 cd "NCERT RAG Project"
 ```
 
-**2. Create and activate a virtual environment:**
+**2. Initialize your Virtual Environment:**
 ```bash
 python3 -m venv .env
-source .env/bin/activate  # On Windows use: .env\Scripts\activate
+source .env/bin/activate  # Windows users: .env\Scripts\activate
 ```
 
-**3. Install the necessary dependencies:**
+**3. Install Dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-**4. Add your Groq API Key:**
-To authorize LLM requests in the RAG pipeline, export your Groq API key in the shell, or paste it directly in the `USER_API_KEY` variable inside `rag.py`.
+**4. Authenticate Groq LLM:**
+Grab your free API key from the [Groq Console](https://console.groq.com/). Export it to your terminal:
 ```bash
-export GROQ_API_KEY="gsk-..." # Replace with your actual key
+export GROQ_API_KEY="gsk_your_api_key_here"
 ```
 
 ---
 
-## ⚙️ Usage & Pipeline Execution
+## ⚡ Using the Pipeline
 
-The system is highly configurable and operated via the `pipeline.py` master orchestrator.
+Control the entire system seamlessly via the master orchestrator, `pipeline.py`.
 
-### 1. Run the Full Pipeline End-to-End
-This sequence executes Extraction → Preprocessing → Retrieval Smoke-Test → Evaluation.
+| Command | Action Performed |
+|---------|-----------------|
+| `python pipeline.py` | Runs the full pipeline End-to-End (Extraction → Eval). |
+| `python pipeline.py --from stage3` | Resumes from retrieval (skips time-consuming PDF extraction). |
+| `python pipeline.py --skip-eval` | Runs the system but skips the final automated evaluation. |
+
+You can also run individual components manually if you are debugging:
 ```bash
-python pipeline.py
-```
-
-### 2. Resume From a Specific Stage
-Skip time-consuming prior stages (like PDF extraction) during development.
-```bash
-python pipeline.py --from stage3   # Skip extraction & preprocessing, go to BM25
-```
-
-### 3. Skip Evaluation
-Speeds up the development iteration loop.
-```bash
-python pipeline.py --skip-eval
-```
-
-### 4. Run Individual Modules Separately
-```bash
-python extraction.py              # Extract raw text from PDFs
-python preprocess.py              # Chunk text logically into sentences
-python retriever.py               # Test the BM25 retrieval functionality
+python extraction.py              # Extract raw text
+python preprocess.py              # Chunk text into sentences
+python retriever.py               # Test BM25 retrieval manually
 python rag.py                     # Single Q&A LLM execution test
-python evaluation/run_eval.py     # Trigger the comprehensive evaluation suite
 ```
 
 ---
 
-## 🧠 Chunking Strategy
+## 🧠 Advanced Chunking Strategy
 
-This project leverages an intelligent **sliding-window sentence chunking** mechanism:
-- **Window Size:** 5 sentences per chunk.
-- **Overlap:** 2-sentence (40%) overlap.
-- **Why?** A given sentence in this NCERT science textbook averages ~20 tokens, meaning each chunk is around 100 tokens long. The 40% overlap ensures concepts that span across chunk boundaries are retained cohesively. By keeping boundaries strictly at the sentence level (via `nltk.tokenize.punkt`), no concept is ever split awkwardly mid-sentence.
+This project leverages an intelligent **sliding-window sentence chunking** mechanism to maintain context:
+- **Window Size:** `5` sentences per chunk (~100 tokens).
+- **Overlap:** `2` sentences (40%) overlap.
+- **Why?** Physics concepts frequently span multiple consecutive sentences. A 40% overlap ensures that boundaries never arbitrarily sever a core concept from its mathematical explanation. By relying on NLTK's `punkt` tokenizer, boundaries are strictly kept at the sentence level.
 
 ---
 
 ## 📊 Evaluation Framework
 
-The project includes a rigorous, programmatic evaluation suite (`evaluation/run_eval.py`) that scores system performance over a fixed dataset (`eval_set.json`). 
+The project enforces pedagogical safety via a rigorous, programmatic evaluation suite (`evaluation/run_eval.py`). It automatically tests the pipeline against **19 curated questions**:
 
-It tests across **19 questions** split into three distinct categories:
+* **Textbook (12):** End-of-chapter physics questions.
+* **Paraphrase (3):** Robustness checks against alternate wording.
+* **Out-of-scope (4):** Safety checks ensuring the LLM correctly refuses ungrounded/hallucinated queries.
 
-| Category | Count | Purpose |
-|----------|-------|---------|
-| **Textbook** | 12 | Directly assesses end-of-chapter exercises |
-| **Paraphrase** | 3 | Same answer required, but utilizes different wording |
-| **Out-of-scope** | 4 | Tests whether the LLM correctly refuses ungrounded queries |
-
-The generated answers are fundamentally scored on three main axes: 
-1. **Correctness** 
-2. **Grounding** 
-3. **Refusal-appropriateness**
-
-*Post-execution, results are compiled safely into `evaluation/results/evaluation_results.csv` and a readable `.md` summary format.*
+> **Evaluation Metrics:** Every answer is scored on **Correctness**, **Grounding** (did it use the textbook?), and **Refusal-appropriateness** (did it safely reject out-of-syllabus questions?).
 
 ---
 
-## 🛠 Configuration Details
+## 🛠 Configuration
 
-There are absolutely no hardcoded strings floating around in individual files. System paths, model parameters, and algorithmic constants are comprehensively consolidated inside `config.py`.
+There are **zero hardcoded strings** scattered across the scripts. Modify algorithmic constants exclusively inside `config.py`.
 
-| Variable | Default Value | Purpose |
-|---------|---------|-------------|
+| Variable | Value | Purpose |
+|---------|-------|-------------|
 | `CHUNK_WINDOW` | `5` | Defines sentences per logical chunk block |
 | `CHUNK_OVERLAP` | `2` | Number of overlapping sentences |
-| `TOP_K` | `3` | Documents retrieved dynamically per query by BM25 |
+| `TOP_K` | `3` | Number of context documents retrieved by BM25 |
 | `LLM_MODEL` | `llama-3.1-8b-instant` | The high-efficiency Groq Model parameter |
 
-*To modify the application's core logic or testing constraints, you only ever need to alter `config.py`.*
+---
+<div align="center">
+<i>Built for reliable, hallucination-free educational intelligence.</i>
+</div>
