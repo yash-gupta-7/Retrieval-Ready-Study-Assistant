@@ -101,7 +101,7 @@ def _build_markdown(rows: list[dict]) -> str:
         f"| Total questions | {len(rows)} |",
         f"| In-scope questions | {len(in_scope)} |",
         f"| Grounded answers (in-scope) | {grounded_yes}/{len(in_scope)} |",
-        f"| Grounded answers percentage (in-scope) | {round((grounded_yes/len(in_scope))*100)}|",
+        f"| Grounded answers percentage (in-scope) | {round((grounded_yes/len(in_scope))*100)}% |",
         f"| Out-of-scope questions | {len(out_scope)} |",
         f"| Correct refusals | {refused_correctly}/{len(out_scope)} |",
         "",

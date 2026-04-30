@@ -29,9 +29,13 @@ EVAL_RESULTS_MD  = os.path.join(EVAL_RESULTS_DIR, "evaluation_results.md")
 LLM_MODEL       = "llama-3.1-8b-instant"     # Groq model
 
 # ── Chunking strategy ─────────────────────────────────────────────────────────
-CHUNK_WINDOW   = 5    # sentences per chunk
-CHUNK_OVERLAP  = 2    # overlap between consecutive chunks (40 %)
-MIN_CHUNK_WORDS = 10  # discard chunks smaller than this
+CHUNK_WINDOW = 5   # legacy sentence-window setting kept for compatibility
+CHUNK_OVERLAP = 2  # legacy sentence overlap setting kept for compatibility
+MIN_CHUNK_WORDS = 10
+
+# LangChain chunking settings
+LANGCHAIN_CHUNK_SIZE = 600      # characters per chunk
+LANGCHAIN_CHUNK_OVERLAP = 150   # overlapping characters between chunks
 
 # ── Retrieval ─────────────────────────────────────────────────────────────────
 TOP_K = 3   # number of chunks returned per query
