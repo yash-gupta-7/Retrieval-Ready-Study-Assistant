@@ -10,7 +10,7 @@ Exposes:
 import os
 from typing import Optional
 from groq import Groq
-from retriever import load_retriever, BM25Retriever
+from retriever import load_retriever, SemanticRetriever
 from config import TOP_K, LLM_MODEL
 
 # ── System prompt (grounding contract) ────────────────────────────────────────
@@ -28,22 +28,13 @@ STRICT RULES — follow without exception:
 """
 
 # ── Client ────────────────────────────────────────────────────────────────────
-# You can securely add your Groq API key here.
-# (If you don't want to hardcode it, leave it blank and run `export GROQ_API_KEY=gsk_...` in your terminal instead).
-USER_API_KEY = "YOUR_API_KEY_HERE"
-
 def _get_client() -> Groq:
-    # 1. Try to get it from the environment first
     api_key = os.environ.get("GROQ_API_KEY", "")
     
-    # 2. If it's not in the environment, use the variable defined above
     if not api_key:
-        api_key = USER_API_KEY
-        
-    if not api_key or api_key == "YOUR_API_KEY_HERE":
         raise EnvironmentError(
             "GROQ_API_KEY is not set.\n"
-            "Please paste your API key in `USER_API_KEY` in rag.py or export it in the shell!"
+            "Please ensure it is set in your .env file or exported in the shell!"
         )
     return Groq(api_key=api_key)
 
@@ -52,7 +43,7 @@ def _get_client() -> Groq:
 
 def answer(
     question  : str,
-    retriever : Optional[BM25Retriever] = None,
+    retriever : Optional[SemanticRetriever] = None,
     k         : int = TOP_K,
     model     : str = LLM_MODEL,
 ) -> dict:
@@ -62,7 +53,7 @@ def answer(
     Parameters
     ----------
     question  : Natural-language question to answer.
-    retriever : Pre-built BM25Retriever (lazy-loaded if None).
+    retriever : Pre-built SemanticRetriever (lazy-loaded if None).
     k         : Number of context chunks to retrieve.
     model     : OpenAI model identifier.
 
@@ -118,4 +109,4 @@ if __name__ == "__main__":
     print("Answer:", result["answer"])
     print(f"\nBacked by {len(result['retrieved_chunks'])} chunks:")
     for r in result["retrieved_chunks"]:
-        print(f"  [{r['section']}] score={r['bm25_score']} | {r['text'][:80]}…")
+        print(f"  [{r['section']}] score={r.get('similarity_score', 0):.4f} | {r['text'][:80]}…")

@@ -51,7 +51,7 @@ def run_stage3():
     for q in test_queries:
         print(f"\n  Query: {q}")
         for r in retriever.retrieve(q, k=3):
-            print(f"    [score={r['bm25_score']:.4f}] [{r['section']}] {r['text'][:90]}…")
+            print(f"    [score={r.get('similarity_score', 0):.4f}] [{r['section']}] {r['text'][:90]}…")
 
 
 def run_stage4():

@@ -3,6 +3,10 @@ config.py — Centralised project paths and settings.
 All other scripts import from here so paths never need to be hardcoded elsewhere.
 """
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # ── Root ──────────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -11,6 +15,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR      = os.path.join(BASE_DIR, "data")
 RAW_DIR       = os.path.join(DATA_DIR, "raw")
 PROCESSED_DIR = os.path.join(DATA_DIR, "processed")
+CHROMA_DB_DIR = os.path.join(DATA_DIR, "chroma_db")
 
 # ── File paths (processed) ────────────────────────────────────────────────────
 PDF_TEXT_FILE    = os.path.join(PROCESSED_DIR, "pdf_text.txt")
@@ -26,7 +31,8 @@ EVAL_RESULTS_CSV = os.path.join(EVAL_RESULTS_DIR, "evaluation_results.csv")
 EVAL_RESULTS_MD  = os.path.join(EVAL_RESULTS_DIR, "evaluation_results.md")
 
 # ── Model settings ────────────────────────────────────────────────────────────
-LLM_MODEL       = "llama-3.1-8b-instant"     # Groq model
+LLM_MODEL       = "openai/gpt-oss-20b"       # Groq model
+EMBEDDING_MODEL = "text-embedding-3-small"   # OpenAI embeddings
 
 # ── Chunking strategy ─────────────────────────────────────────────────────────
 CHUNK_WINDOW = 5   # legacy sentence-window setting kept for compatibility

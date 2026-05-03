@@ -1,6 +1,7 @@
 # Python env
 venv/
-.env/   
+.env/
+.env
 .venv/
 
 #PDF file
@@ -8,6 +9,7 @@ data/
 
 #extracted data
 *.txt
+!requirements.txt
 *.npy
 *.index
 
