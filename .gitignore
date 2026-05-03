@@ -1,5 +1,7 @@
 # Python env
-.env/
+venv/
+.env/   
+.venv/
 
 #PDF file
 data/
