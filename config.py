@@ -31,8 +31,8 @@ EVAL_RESULTS_CSV = os.path.join(EVAL_RESULTS_DIR, "evaluation_results.csv")
 EVAL_RESULTS_MD  = os.path.join(EVAL_RESULTS_DIR, "evaluation_results.md")
 
 # ── Model settings ────────────────────────────────────────────────────────────
-LLM_MODEL       = "openai/gpt-oss-20b"       # Groq model
-EMBEDDING_MODEL = "text-embedding-3-small"   # OpenAI embeddings
+LLM_MODEL       = "llama-3.1-8b-instant"     # Groq model
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"   # Local HuggingFace embeddings
 
 # ── Chunking strategy ─────────────────────────────────────────────────────────
 CHUNK_WINDOW = 5   # legacy sentence-window setting kept for compatibility

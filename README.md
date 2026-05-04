@@ -4,9 +4,11 @@
 **A Production-Grade Document Intelligence & RAG System for Class 9 Science**
 
 [![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![LangChain](https://img.shields.io/badge/Framework-LangChain-1C3C3C.svg?style=for-the-badge&logo=langchain&logoColor=white)](https://langchain.com)
 [![LLM Engine](https://img.shields.io/badge/LLM-Llama_3.1_8B-FF9E0F.svg?style=for-the-badge&logo=meta&logoColor=white)](https://groq.com)
 [![API Provider](https://img.shields.io/badge/Provider-Groq-00B27A.svg?style=for-the-badge&logo=groq&logoColor=white)](https://console.groq.com)
-[![Retrieval Method](https://img.shields.io/badge/Retrieval-BM25-E4405F.svg?style=for-the-badge&logo=apache&logoColor=white)](#)
+[![Vector Database](https://img.shields.io/badge/VectorDB-Chroma-45A0E6.svg?style=for-the-badge&logo=data&logoColor=white)](https://trychroma.com)
+[![Embeddings](https://img.shields.io/badge/Embeddings-HuggingFace-F9AB00.svg?style=for-the-badge&logo=huggingface&logoColor=white)](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
 
 *An intelligent, hallucination-free educational assistant that answers student queries **strictly** using curriculum-approved NCERT textbooks.*
 
@@ -16,7 +18,7 @@
 
 ## 🌟 Overview
 
-The **Retrieval-Ready Study Assistant** is a modular, four-stage **Retrieval-Augmented Generation (RAG)** pipeline. It is specifically calibrated for **NCERT Class 9 Science** chapters (Motion, Force & Laws of Motion, Gravitation). By coupling high-speed lexical retrieval (BM25) with high-accuracy generation (Llama 3.1), the system strictly grounds every answer in the textbook text and firmly refuses to answer out-of-syllabus questions.
+The **Retrieval-Ready Study Assistant** is a modular, four-stage **Retrieval-Augmented Generation (RAG)** pipeline completely powered by **LangChain**. It is specifically calibrated for **NCERT Class 9 Science** chapters (Motion, Force & Laws of Motion, Gravitation). By coupling high-fidelity **semantic retrieval** (ChromaDB + HuggingFace) with lightning-fast generation (Groq LPU), the system strictly grounds every answer in the textbook text and firmly refuses to answer out-of-syllabus questions. Best of all, it requires **zero paid API keys**!
 
 ---
 
@@ -40,7 +42,7 @@ You can download the **official, open-source PDF files for NCERT Class 9 Science
 
 ## 🏗 System Architecture
 
-The pipeline is completely modular, orchestrated by a master script (`pipeline.py`). It utilizes a deterministic approach to data parsing and retrieval, ensuring maximum factual reliability.
+The pipeline is completely modular, orchestrated by a master script (`pipeline.py`). It utilizes LangChain's Expression Language (LCEL) and persistent vector stores to ensure maximum factual reliability.
 
 ```mermaid
 graph TD
@@ -54,10 +56,10 @@ graph TD
     A[📄 Raw NCERT PDFs] -->|Stage 1: extraction.py| B(Text: pdf_text.txt):::extract
     B -->|Stage 2: preprocess.py| C(Chunks: chunks.json):::process
     
-    C -->|Stage 3: retriever.py| D{🔍 BM25 Lexical Retriever}:::retrieve
+    C -->|Stage 3: retriever.py| D[(Chroma Vector DB)]:::retrieve
     
-    E[👤 User Query] --> D
-    D -->|Top-K Context Chunks| F[🤖 rag.py - Groq LLM]:::generate
+    E[👤 User Query] -->|HuggingFace Embeddings| D
+    D -->|Top-K Context Chunks| F[🤖 rag.py - ChatGroq LCEL]:::generate
     E --> F
     
     F -->|Generation based strictly on Context| G[✅ Grounded Answer]:::generate
@@ -76,9 +78,9 @@ NCERT RAG Project/
 ├── pipeline.py                 # 🚀 Master orchestrator — runs all stages end-to-end
 │
 ├── extraction.py               # 📄 Stage 1 — PDF extraction utilizing PyMuPDF
-├── preprocess.py               # ✂️ Stage 2 — Sentence-level Chunking
-├── retriever.py                # 🔍 Stage 3 — BM25 Lexical Retriever engine
-├── rag.py                      # 🧠 LLM grounded generation (Groq API)
+├── preprocess.py               # ✂️ Stage 2 — Advanced chunking logic
+├── retriever.py                # 🔍 Stage 3 — Chroma Semantic Retriever & HuggingFace
+├── rag.py                      # 🧠 Stage 4 — ChatGroq LCEL grounded generation 
 │
 ├── evaluation/
 │   ├── eval_set.json           # 📋 19-question evaluation dataset
@@ -87,8 +89,10 @@ NCERT RAG Project/
 │
 ├── data/
 │   ├── raw/                    # 📥 Place your downloaded NCERT PDF(s) here!
-│   └── processed/              # ⚙️ Auto-generated intermediate parsing files
+│   ├── processed/              # ⚙️ Auto-generated intermediate parsing files
+│   └── chroma_db/              # 🗄️ Persisted semantic vector store
 │
+├── .env                        # 🔐 Local environment variables (API Keys)
 └── requirements.txt            # 📦 Project Python dependencies
 ```
 
@@ -104,8 +108,8 @@ cd "NCERT RAG Project"
 
 **2. Initialize your Virtual Environment:**
 ```bash
-python3 -m venv .env
-source .env/bin/activate  # Windows users: .env\Scripts\activate
+python3 -m venv venv
+source venv/bin/activate  # Windows users: venv\Scripts\activate
 ```
 
 **3. Install Dependencies:**
@@ -113,11 +117,16 @@ source .env/bin/activate  # Windows users: .env\Scripts\activate
 pip install -r requirements.txt
 ```
 
-**4. Authenticate Groq LLM:**
-Grab your free API key from the [Groq Console](https://console.groq.com/). Export it to your terminal:
+**4. Set Up Environment Variables:**
+The application uses a `.env` file to manage secrets securely. Create one in the project root:
 ```bash
-export GROQ_API_KEY="gsk_your_api_key_here"
+touch .env
 ```
+Inside `.env`, securely paste your free [Groq API Key](https://console.groq.com/):
+```env
+GROQ_API_KEY=gsk_your_actual_key_here
+```
+*(Note: Because we use free HuggingFace local embeddings, you **do not** need an OpenAI key!)*
 
 ---
 
@@ -128,25 +137,24 @@ Control the entire system seamlessly via the master orchestrator, `pipeline.py`.
 | Command | Action Performed |
 |---------|-----------------|
 | `python pipeline.py` | Runs the full pipeline End-to-End (Extraction → Eval). |
-| `python pipeline.py --from stage3` | Resumes from retrieval (skips time-consuming PDF extraction). |
+| `python pipeline.py --from stage3` | Resumes from retrieval (skips time-consuming PDF extraction & chunking). |
 | `python pipeline.py --skip-eval` | Runs the system but skips the final automated evaluation. |
 
 You can also run individual components manually if you are debugging:
 ```bash
 python extraction.py              # Extract raw text
-python preprocess.py              # Chunk text into sentences
-python retriever.py               # Test BM25 retrieval manually
+python preprocess.py              # Chunk text
+python retriever.py               # Build Chroma DB & test retrieval
 python rag.py                     # Single Q&A LLM execution test
 ```
 
 ---
 
-## 🧠 Advanced Chunking Strategy
+## 🧠 Semantic Search & Local Embeddings
 
-This project leverages an intelligent **sliding-window sentence chunking** mechanism to maintain context:
-- **Window Size:** `5` sentences per chunk (~100 tokens).
-- **Overlap:** `2` sentences (40%) overlap.
-- **Why?** Physics concepts frequently span multiple consecutive sentences. A 40% overlap ensures that boundaries never arbitrarily sever a core concept from its mathematical explanation. By relying on NLTK's `punkt` tokenizer, boundaries are strictly kept at the sentence level.
+Unlike legacy keyword-search systems, this project natively understands the **meaning** behind student queries using **semantic similarity**:
+- **Embeddings:** Powered by `sentence-transformers/all-MiniLM-L6-v2` via HuggingFace. These run 100% locally on your machine for free, preserving privacy.
+- **Vector Database:** High-performance persistence is handled by **ChromaDB**. Once documents are embedded, they are saved locally in `data/chroma_db/`, allowing for instant start-ups on future runs.
 
 ---
 
@@ -168,10 +176,10 @@ There are **zero hardcoded strings** scattered across the scripts. Modify algori
 
 | Variable | Value | Purpose |
 |---------|-------|-------------|
-| `CHUNK_WINDOW` | `5` | Defines sentences per logical chunk block |
-| `CHUNK_OVERLAP` | `2` | Number of overlapping sentences |
-| `TOP_K` | `3` | Number of context documents retrieved by BM25 |
 | `LLM_MODEL` | `llama-3.1-8b-instant` | The high-efficiency Groq Model parameter |
+| `EMBEDDING_MODEL` | `sentence-transformers/...` | Defines the HuggingFace local embedding model |
+| `LANGCHAIN_CHUNK_SIZE` | `600` | Controls chunk length |
+| `TOP_K` | `3` | Number of context documents retrieved by ChromaDB |
 
 ---
 <div align="center">

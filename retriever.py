@@ -10,7 +10,7 @@ Exposes:
 import json
 import os
 from langchain_chroma import Chroma
-from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 from config import CHUNKS_JSON_FILE, CHROMA_DB_DIR, TOP_K, EMBEDDING_MODEL
 
@@ -21,15 +21,8 @@ class SemanticRetriever:
         if not chunks:
             raise ValueError("Cannot build retriever from empty chunk list.")
         
-        # Check API key
-        if not os.environ.get("OPENAI_API_KEY"):
-            raise EnvironmentError(
-                "OPENAI_API_KEY is not set.\n"
-                "Please export it in your shell to use text-embedding-3-small."
-            )
-
         self.chunks = chunks
-        self.embeddings = OpenAIEmbeddings(model=EMBEDDING_MODEL)
+        self.embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
 
         # Check if Chroma DB already exists to avoid re-embedding every time
         if os.path.exists(CHROMA_DB_DIR) and os.listdir(CHROMA_DB_DIR):

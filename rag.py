@@ -9,7 +9,8 @@ Exposes:
 """
 import os
 from typing import Optional
-from groq import Groq
+from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate
 from retriever import load_retriever, SemanticRetriever
 from config import TOP_K, LLM_MODEL
 
@@ -27,17 +28,14 @@ STRICT RULES — follow without exception:
 4. When possible, mirror the language of the textbook rather than paraphrasing.
 """
 
-# ── Client ────────────────────────────────────────────────────────────────────
-def _get_client() -> Groq:
+def _get_llm(model: str = LLM_MODEL) -> ChatGroq:
     api_key = os.environ.get("GROQ_API_KEY", "")
-    
     if not api_key:
         raise EnvironmentError(
             "GROQ_API_KEY is not set.\n"
             "Please ensure it is set in your .env file or exported in the shell!"
         )
-    return Groq(api_key=api_key)
-
+    return ChatGroq(model=model, api_key=api_key, temperature=0.1, max_tokens=512)
 
 # ── Core answer function ──────────────────────────────────────────────────────
 
@@ -55,7 +53,7 @@ def answer(
     question  : Natural-language question to answer.
     retriever : Pre-built SemanticRetriever (lazy-loaded if None).
     k         : Number of context chunks to retrieve.
-    model     : OpenAI model identifier.
+    model     : Groq model identifier.
 
     Returns
     -------
@@ -77,25 +75,21 @@ def answer(
         for i, r in enumerate(retrieved)
     )
 
-    user_message = (
-        f"Context Chunks:\n{context_blocks}\n\n"
-        f"Question: {question}"
-    )
-
-    # Step 3 — Generate
-    client   = _get_client()
-    response = client.chat.completions.create(
-        model       = model,
-        messages    = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user",   "content": user_message},
-        ],
-        temperature = 0.1,
-        max_tokens  = 512,
-    )
+    # Step 3 — Generate using Langchain ChatGroq
+    llm = _get_llm(model=model)
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", SYSTEM_PROMPT),
+        ("human", "Context Chunks:\n{context}\n\nQuestion: {question}")
+    ])
+    
+    chain = prompt | llm
+    response = chain.invoke({
+        "context": context_blocks,
+        "question": question
+    })
 
     return {
-        "answer"           : response.choices[0].message.content.strip(),
+        "answer"           : response.content.strip(),
         "retrieved_chunks" : retrieved,
     }
 
